@@ -58,8 +58,7 @@ def update_readme_certificates(collected_certificates: list, readme_certificates
     for cert in collected_certificates:
         provider = os.path.basename(os.path.dirname(cert))
         linked_provider = update_provider_info(provider)
-        file_position = f"certificates/{provider}/{cert}"
-        display_name = remove_prefix_from_certificates(os.path.basename(cert))
+        display_name = remove_prefix_from_certificate(os.path.basename(cert)).replace("_", " ").removesuffix(".pdf")
 
         new_readme_certificates_part += f"| [{display_name}]({cert}) | {linked_provider} |\n"
 
@@ -84,21 +83,15 @@ def update_provider_info(provider: str):
         return provider
 
 
-def remove_prefix_from_certificates(certificates: list[str] | str):
+def remove_prefix_from_certificate(certificates: str):
     """
     this function removes the prefix from the certificates
 
     :param certificates: the certificates to remove the prefix from
     :return: the certificates without the prefix
     """
-    if isinstance(certificates, list):
-        for i in range(len(certificates)):
-            for prefix in PREFIX_TO_REMOVE:
-                certificates[i] = certificates[i].replace(prefix, "")
-        return certificates
-    else:
-        for prefix in PREFIX_TO_REMOVE:
-            return certificates.replace(prefix, "")
+    for prefix in PREFIX_TO_REMOVE:
+        return certificates.replace(prefix, "")
 
 
 def read_readme():
