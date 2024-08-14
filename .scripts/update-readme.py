@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import os
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Variables for the script
 
-README_START_PHRASE = "[//]: # (begin - auto update-readme)"
-README_END_PHRASE = "[//]: # (end - auto update-readme)"
+README_START_PHRASE = "<!-- (begin - auto update-readme) -->"
+README_END_PHRASE = "<!-- (end - auto update-readme) -->"
 
 PREFIX_TO_REMOVE = [
     "Abschlusszertifikat_"
@@ -28,7 +30,7 @@ def main():
 
     # sort the certificates by the date they were created
     certificates.sort(key=os.path.getctime, reverse=True)
-    certificates = remove_prefix_from_certificates(certificates)
+    # certificates = remove_prefix_from_certificates(certificates)
 
     # print(certificates)
     readme = split_readme(read_readme())
@@ -51,15 +53,18 @@ def update_readme_certificates(collected_certificates: list, readme_certificates
     :param readme_certificates_part: the part of the readme file that contains the certificates
     :return: the updated certificates part of the readme file
     """
-    new_readme_certificates_part = "[//]: # (begin - auto update-readme)\n|Title|Provider|\n|-----|--------|\n"
+    new_readme_certificates_part = f"{README_START_PHRASE}\n|Certificate|Provider|\n|---|---|\n"
+
     for cert in collected_certificates:
         provider = os.path.basename(os.path.dirname(cert))
         linked_provider = update_provider_info(provider)
         file_position = f"certificates/{provider}/{cert}"
-        new_readme_certificates_part += f"|[{os.path.basename(cert)}]({file_position})|{linked_provider}|\n"
+        display_name = remove_prefix_from_certificates(os.path.basename(cert))
+
+        new_readme_certificates_part += f"|[{display_name}]({file_position})|{linked_provider}|\n"
 
     # remove the last line bread
-    new_readme_certificates_part += "[//]: # (end - auto update-readme)"
+    new_readme_certificates_part += f"{README_END_PHRASE}"
     diff = len(new_readme_certificates_part) - len(readme_certificates_part)
 
     print("Diff: ", diff)
@@ -79,17 +84,21 @@ def update_provider_info(provider: str):
         return provider
 
 
-def remove_prefix_from_certificates(certificates: list):
+def remove_prefix_from_certificates(certificates: list[str] | str):
     """
     this function removes the prefix from the certificates
 
     :param certificates: the certificates to remove the prefix from
     :return: the certificates without the prefix
     """
-    for i in range(len(certificates)):
+    if isinstance(certificates, list):
+        for i in range(len(certificates)):
+            for prefix in PREFIX_TO_REMOVE:
+                certificates[i] = certificates[i].replace(prefix, "")
+        return certificates
+    else:
         for prefix in PREFIX_TO_REMOVE:
-            certificates[i] = certificates[i].replace(prefix, "")
-    return certificates
+            return certificates.replace(prefix, "")
 
 
 def read_readme():
