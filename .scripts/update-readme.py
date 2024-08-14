@@ -53,7 +53,7 @@ def update_readme_certificates(collected_certificates: list, readme_certificates
     :param readme_certificates_part: the part of the readme file that contains the certificates
     :return: the updated certificates part of the readme file
     """
-    new_readme_certificates_part = f"{README_START_PHRASE}\n|Certificate|Provider|\n|---|---|\n"
+    new_readme_certificates_part = f"{README_START_PHRASE}\n| Certificate | Provider |\n|-------------|----------|\n"
 
     for cert in collected_certificates:
         provider = os.path.basename(os.path.dirname(cert))
@@ -61,7 +61,7 @@ def update_readme_certificates(collected_certificates: list, readme_certificates
         file_position = f"certificates/{provider}/{cert}"
         display_name = remove_prefix_from_certificates(os.path.basename(cert))
 
-        new_readme_certificates_part += f"|[{display_name}]({file_position})|{linked_provider}|\n"
+        new_readme_certificates_part += f"| [{display_name}]({cert}) | {linked_provider} |\n"
 
     # remove the last line bread
     new_readme_certificates_part += f"{README_END_PHRASE}"
