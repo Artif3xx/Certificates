@@ -53,9 +53,10 @@ def update_readme_certificates(collected_certificates: list, readme_certificates
     """
     new_readme_certificates_part = "[//]: # (begin - auto update-readme)\n|Title|Provider|\n|-----|--------|\n"
     for cert in collected_certificates:
-        provider = update_provider_info(os.path.basename(os.path.dirname(cert)))
+        provider = os.path.basename(os.path.dirname(cert))
+        linked_provider = update_provider_info(provider)
         file_position = f"certificates/{provider}/{cert}"
-        new_readme_certificates_part += f"|[{os.path.basename(cert)}]({file_position})|{provider}|\n"
+        new_readme_certificates_part += f"|[{os.path.basename(cert)}]({file_position})|{linked_provider}|\n"
 
     # remove the last line bread
     new_readme_certificates_part += "[//]: # (end - auto update-readme)"
